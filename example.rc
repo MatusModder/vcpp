@@ -1,0 +1,19 @@
+#!/bin/bash
+name=example
+version=1.0
+src=git+https://github.com/$name/$name.git
+
+prepare() {
+    cd $name
+    git checkout $version
+    ./autogen.sh
+    ./configure
+}
+
+build() {
+    make
+}
+
+install() {
+    sudo make install
+}

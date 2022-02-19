@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+arch=$(uname -m)
+server=dl.mpm.sk
+technology=wget
+suffix=rc
+compression=xz
+download_dir=/var/db/pkgman/downloads
+src_dir=/var/db/pkgman/src
+compression=gz
+
+info() {
+    echo -e "\033[1;32m$1\033[0m"
+}
+
+_help() {
+    echo "Usage: pkgman [OPTION]..."
+    echo "Package Manager for LFS."
+    echo
+    echo "  add <package>  Add a package to the list of packages to be"
+    echo "                        installed."
+    echo "  delete <package>  Delete a package from the list of packages"
+    echo "                        to be installed."
+    echo "  help |  Display this help and exit."
+    echo "  list |  List all packages to be installed."
+    echo "  purge <package> | Delete a package and its configuration files"
+    echo "                        from the system."
+    echo "  remove <package> | Remove a package from the list of packages"
+    echo "                        to be installed."
+    echo "  search <package> | Search for a package on the Arch Linux"
+    echo "                        repositories."
+    echo "  update | Update the package lists."
+    echo "  version | Display version information and exit."
+    echo
+    echo "Report bugs to MatusModder over at GitHub."
+}
+_dl() {
+    if [ "$technology" = "wget" ]; then
+        wget -c -P "$download_dir" "$server/$1"
+    elif [ "$technology" = "curl" ]; then
+        curl -L -C - -O "$server/$1"
+    fi
+}
+_pass2bash() {
+    # pass the prepare() function to bash
+    cat $1.rc | grep prepare | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/prepare() { /' | sed 's/$/ }/' | bash
+    cat $1.rc | grep build | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/build() { /' | sed 's/$/ }/' | bash
+    cat $1.rc | grep install | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/install() { /' | sed 's/$/ }/' | bash
+}
+_route() {
+    # route the package to the correct function
+    if [ "$1" = "add" ]; then
+        _add
+    elif [ "$1" = "delete" ]; then
+        _delete
+    elif [ "$1" = "list" ]; then
+        _list
+    elif [ "$1" = "purge" ]; then
+        _purge
+    elif [ "$1" = "remove" ]; then
+        _remove
+    elif [ "$1" = "search" ]; then
+        _search
+    elif [ "$1" = "update" ]; then
+        _update
+    elif [ "$1" = "version" ]; then
+        _version
+    else
+        _help
+    fi
+}
+_ask() {
+    # ask the user for a package name
+    dialog --msgbox "Are you sure you want to install $1.rc?" 10 30
+    if [ -z "$package" ]; then
+        _help
+    fi
+}
+
+_extract() {
+    tar -xvf -C "$package.tar.$compression" /var/db/pkgman/rc
+}
+_src-dl() {
+    cd /var/db/pkgman/rc
+    if cat $package.rc | grep src=git 
+    then
+    git clone $(cat $package.rc | grep https)
+    elif cat $package.rc | grep src=svn 
+    then
+    svn co $(cat $package.rc | grep https)
+    elif cat $package.rc | grep src=hg then
+    hg clone $(cat $package.rc | grep https)
+    elif cat $package.rc | grep src=bzr 
+    then
+    bzr branch $(cat $package.rc | grep https)
+    fi
+}
