@@ -94,3 +94,6 @@ _src-dl() {
     bzr branch $(cat $package.rc | grep https)
     fi
 }
+_uninstall() {
+    
+}
