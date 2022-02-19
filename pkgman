@@ -87,7 +87,7 @@ _src-dl() {
     elif cat $package.rc | grep src=svn 
     then
     svn co $(cat $package.rc | grep https)
-    elif cat $package.rc | grep src=hg then
+    elif cat $package.rc | grep src=hg ;then
     hg clone $(cat $package.rc | grep https)
     elif cat $package.rc | grep src=bzr 
     then
