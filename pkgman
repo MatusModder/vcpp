@@ -26,7 +26,7 @@ _help() {
     echo "                        from the system."
     echo "  remove <package> | Remove a package from the list of packages"
     echo "                        to be installed."
-    echo "  search <package> | Search for a package on the Arch Linux"
+    echo "  search <package> | Search for a package on the $server"
     echo "                        repositories."
     echo "  update | Update the package lists."
     echo "  version | Display version information and exit."
