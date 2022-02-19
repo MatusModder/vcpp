@@ -40,11 +40,11 @@ _dl() {
         curl -L -C - -O "$server/$1"
     fi
 }
-_pass2bash() {
+_pass2fakeroot() {
     # pass the prepare() function to bash
-    cat $1.rc | grep prepare | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/prepare() { /' | sed 's/$/ }/' | bash
-    cat $1.rc | grep build | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/build() { /' | sed 's/$/ }/' | bash
-    cat $1.rc | grep install | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/install() { /' | sed 's/$/ }/' | bash
+    cat $1.rc | grep prepare | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/prepare() { /' | sed 's/$/ }/' | fakeroot
+    cat $1.rc | grep build | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/build() { /' | sed 's/$/ }/' | fakeroot
+    cat $1.rc | grep install | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/install() { /' | sed 's/$/ }/' | fakeroot
 }
 _route() {
     # route the package to the correct function
@@ -95,5 +95,5 @@ _src-dl() {
     fi
 }
 _uninstall() {
-    
+
 }
