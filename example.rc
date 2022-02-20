@@ -18,3 +18,7 @@ build() {
 install() {
     sudo make install
 }
+
+uninstall() {
+    sudo make uninstall
+}
