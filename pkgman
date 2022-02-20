@@ -95,7 +95,7 @@ _src-dl() {
     fi
 }
 _uninstall() {
-    if [ $1 = remove = $2]; then
+    if [ $1 = remove = $2 ]; then
         cat /var/db/pkgman/rc/$1.rc | grep uninstall | cut -d '(' -f2 | cut -d ')' -f1 | sed 's/^/uninstall() { /' | sed 's/$/ }/' | fakeroot
         rm -rf /var/db/pkgman/rc/$1
     fi
